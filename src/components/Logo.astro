@@ -1,0 +1,32 @@
+---
+interface Props {
+    height: string;
+    width: string;
+    name: string;
+}
+
+const { height, width, name } = Astro.props;
+---
+
+<div>
+    <img id="logo" src="/favicon-gradient.svg" alt="Luke Moore initials logo" {height} {width}>
+    <h1>{name}</h1>
+</div>
+
+
+<style>
+    div {
+        display: flex;
+        gap: 0.5em;
+        align-items: center;
+        margin-left: 1em;
+    }
+
+    h1 {
+		font-family: League Spartan;
+		font-size: 2.5rem;
+		line-height: 0.8em;
+		font-weight: 500;
+		letter-spacing: normal;
+    }
+</style>

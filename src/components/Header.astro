@@ -1,0 +1,20 @@
+---
+import Nav from "./Nav.astro";
+import Logo from "./Logo.astro";
+---
+
+<header>
+    <Logo height="65px" width="65px" name="Luke Moore"/>
+    <Nav />
+</header>
+
+<style>
+    header {
+        display: flex;
+        justify-content: space-between;
+        max-width: calc(100% - 2rem);
+        margin: 1em 1em;
+        background-color: #22252D;
+        color: #FFFFF2;
+    }
+</style>
