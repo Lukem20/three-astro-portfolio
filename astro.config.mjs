@@ -4,7 +4,8 @@ import glsl from 'vite-plugin-glsl'
 // https://astro.build/config
 export default defineConfig({
   site: 'https://luke-moore.net',
-  base: '/three-astro-portfolio',
+  base: '/three-astro-portfolio/',
+  experimental: { assets: true },
   server: {
     host: true,
   },
