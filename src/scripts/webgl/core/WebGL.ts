@@ -1,82 +1,86 @@
-import * as THREE from 'three'
-import Stats from 'three/examples/jsm/libs/stats.module'
+import * as THREE from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module';
 
 class WebGL {
-  public renderer: THREE.WebGLRenderer
-  public scene: THREE.Scene
-  public camera: THREE.PerspectiveCamera
-  public time = { delta: 0, elapsed: 0 }
+	public renderer: THREE.WebGLRenderer;
+	public scene: THREE.Scene;
+	public camera: THREE.PerspectiveCamera;
 
-  private clock = new THREE.Clock()
-  private resizeCallback?: () => void
-  private stats?: Stats
+	public time = {
+		delta: 0,
+		elapsed: 0
+	}
+	private clock = new THREE.Clock();
 
-  constructor() {
-    const { width, height, aspect } = this.size
+	private resizeCallback?: () => void;
+	private stats?: Stats;
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.setSize(width, height)
-    this.renderer.shadowMap.enabled = true
+	constructor() {
+		const { width, height, aspect } = this.size;
 
-    this.scene = new THREE.Scene()
-    this.camera = new THREE.PerspectiveCamera(50, aspect, 0.01, 100)
+		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setSize(width, height);
+		this.renderer.shadowMap.enabled = true;
 
-    window.addEventListener('resize', this.handleResize)
-  }
+		this.scene = new THREE.Scene();
+		this.camera = new THREE.PerspectiveCamera(50, aspect, 0.01, 100);
 
-  private handleResize = () => {
-    this.resizeCallback && this.resizeCallback()
+		window.addEventListener('resize', this.handleResize);
+	}
 
-    const { width, height, aspect } = this.size
-    this.camera.aspect = aspect
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(width, height)
-  }
+	private handleResize = () => {
+		this.resizeCallback && this.resizeCallback();
 
-  get size() {
-    const { innerWidth: width, innerHeight: height } = window
-    return { width, height, aspect: width / height }
-  }
+		const { width, height, aspect } = this.size;
+		this.camera.aspect = aspect;
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(width, height);
+	}
 
-  setup(container: HTMLElement) {
-    container.appendChild(this.renderer.domElement)
-  }
+	get size() {
+		const { innerWidth: width, innerHeight: height } = window;
+		return { width, height, aspect: width / height };
+	}
 
-  setStats(container: HTMLElement) {
-    this.stats = new Stats()
-    container.appendChild(this.stats.dom)
-  }
+	setup(container: HTMLElement) {
+		container.appendChild(this.renderer.domElement);
+	}
 
-  setResizeCallback(callback: () => void) {
-    this.resizeCallback = callback
-  }
+	setStats(container: HTMLElement) {
+		this.stats = new Stats();
+		container.appendChild(this.stats.dom);
+	}
 
-  getMesh<T extends THREE.Material>(name: string) {
-    return this.scene.getObjectByName(name) as THREE.Mesh<THREE.BufferGeometry, T>
-  }
+	setResizeCallback(callback: () => void) {
+		this.resizeCallback = callback;
+	}
 
-  render() {
-    this.renderer.render(this.scene, this.camera)
-  }
+	getMesh<T extends THREE.Material>(name: string) {
+		return this.scene.getObjectByName(name) as THREE.Mesh<THREE.BufferGeometry, T>;
+	}
 
-  requestAnimationFrame(callback: () => void) {
-    gl.renderer.setAnimationLoop(() => {
-      this.time.delta = this.clock.getDelta()
-      this.time.elapsed = this.clock.getElapsedTime()
-      this.stats?.update()
-      callback()
-    })
-  }
+	render() {
+		this.renderer.render(this.scene, this.camera);
+	}
 
-  cancelAnimationFrame() {
-    gl.renderer.setAnimationLoop(null)
-  }
+	requestAnimationFrame(callback: () => void) {
+		gl.renderer.setAnimationLoop(() => {
+			this.time.delta = this.clock.getDelta();
+			this.time.elapsed = this.clock.getElapsedTime();
+			this.stats?.update();
+			callback();
+		});
+	}
 
-  dispose() {
-    this.cancelAnimationFrame()
-    gl.scene?.clear()
-  }
+	cancelAnimationFrame() {
+		gl.renderer.setAnimationLoop(null);
+	}
+
+	dispose() {
+		this.cancelAnimationFrame();
+		gl.scene?.clear();
+	}
 }
 
-export const gl = new WebGL()
+export const gl = new WebGL();
