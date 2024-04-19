@@ -1,10 +1,13 @@
 ---
 import CanvasContainer from '../components/CanvasContainer.astro';
-import Layout from '../components/Layout.astro';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Demo">
+<Layout title="Luke Moore">
   	<main>
+		<noscript>
+			You need to enable JavaScript to run this app.
+		</noscript>
 		<CanvasContainer />
 	</main>
 </Layout>
@@ -13,10 +16,5 @@ import Layout from '../components/Layout.astro';
 	main {
 		width: 100%;
 		height: 100%;
-	}
-	.link {
-		position: absolute;
-		bottom: 1rem;
-		right: 2rem;
 	}
 </style>
