@@ -1,6 +1,13 @@
 ---
 import Layout from '../layouts/aboutLayout.astro';
 import { Image } from 'astro:assets';
+import portraitPhoto from '../images/profile_pic_copy.jpg';
+import slugPhoto from '../images/slug1.jpg';
+
+interface Props {
+   imagePath: string;
+}
+
 ---
 
 <Layout title="About">
@@ -9,7 +16,7 @@ import { Image } from 'astro:assets';
 
 			<div>
 				<h2 class="center-text">About me</h2>
-				<Image class="center-img" src='/images/profile_pic_copy.jpg' alt="Portrait photo of me, the website author, Luke Moore." />
+				<Image class="center-img" src={portraitPhoto} alt="Portrait photo of me, the website author, Luke Moore." />
 			</div>
 
 			<div class="justForFlex">
@@ -60,7 +67,7 @@ import { Image } from 'astro:assets';
 
 			<div id="contact-slug">
 				<h2>Contact</h2>
-				<Image id="slug-photo" class="center-img" src='/images/slug1.jpg' alt="A banana slug eats a mushroom from the stem up.">
+				<Image id="slug-photo" class="center-img" src={slugPhoto} alt="A banana slug eats a mushroom from the stem up.">
 			</div>
 
 			<div id="contact-info">
