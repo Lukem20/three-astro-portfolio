@@ -6,7 +6,7 @@ import { resolvePath } from '../../utils';
 export type Assets = {
 	[key in string]: {
 		data?: THREE.Texture | THREE.VideoTexture | GLTF
-		path: string
+		paths: string[]
 		encoding?: boolean
 		flipY?: boolean
 	}
@@ -24,42 +24,45 @@ export async function loadAssets(assets: Assets) {
 
 	await Promise.all(
 		Object.values(assets).map(async (v) => {
-			const path = resolvePath(v.path)
-			const extension = getExtension(path)
 
-			// Photos
-			if (['jpg', 'png', 'webp'].includes(extension)) {
-				const texture = await textureLoader.loadAsync(path);
-				texture.userData.aspect = texture.image.width / texture.image.height;
-				v.encoding && (texture.colorSpace = THREE.SRGBColorSpace);
-				v.flipY !== undefined && (texture.flipY = v.flipY);
-				v.data = texture;
+			for (const p of v.paths) {
+				const path = resolvePath(p)
+				const extension = getExtension(path)
 
-			// GLB 3D object files
-			} else if (['glb'].includes(extension)) {
-				const gltf = await gltfLoader.loadAsync(path);
-				v.data = gltf;
+				// Photos
+				if (['jpg', 'png', 'webp'].includes(extension)) {
+					const texture = await textureLoader.loadAsync(path);
+					texture.userData.aspect = texture.image.width / texture.image.height;
+					v.encoding && (texture.colorSpace = THREE.SRGBColorSpace);
+					v.flipY !== undefined && (texture.flipY = v.flipY);
+					v.data = texture;
 
-			// Videos
-			} else if (['webm', 'mp4'].includes(extension)) {
-				const video = document.createElement('video');
-				video.src = path;
-				video.muted = true;
-				video.loop = true;
-				video.autoplay = true;
-				video.preload = 'metadata';
-				video.playsInline = true;
-				// await video.play()
-				const texture = new THREE.VideoTexture(video);
-				texture.userData.aspect = video.videoWidth / video.videoHeight;
-				v.encoding && (texture.colorSpace = THREE.SRGBColorSpace);
-				v.data = texture;
+				// GLB 3D object files
+				} else if (['glb'].includes(extension)) {
+					const gltf = await gltfLoader.loadAsync(path);
+					v.data = gltf;
 
-			// HDR files
-			} else if (['hdr'].includes(extension)) {
-				const texture = await rgbeLoader.loadAsync(path);
-				texture.mapping = THREE.EquirectangularReflectionMapping;
-				v.data = texture;
+				// Videos
+				} else if (['webm', 'mp4'].includes(extension)) {
+					const video = document.createElement('video');
+					video.src = path;
+					video.muted = true;
+					video.loop = true;
+					video.autoplay = true;
+					video.preload = 'metadata';
+					video.playsInline = true;
+					// await video.play()
+					const texture = new THREE.VideoTexture(video);
+					texture.userData.aspect = video.videoWidth / video.videoHeight;
+					v.encoding && (texture.colorSpace = THREE.SRGBColorSpace);
+					v.data = texture;
+
+				// HDR files
+				} else if (['hdr'].includes(extension)) {
+					const texture = await rgbeLoader.loadAsync(path);
+					texture.mapping = THREE.EquirectangularReflectionMapping;
+					v.data = texture;
+				}
 			}
 		}),
 	)
