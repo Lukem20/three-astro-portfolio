@@ -3,13 +3,10 @@ import Layout from '../layouts/aboutLayout.astro';
 import { Image } from 'astro:assets';
 import portraitPhoto from '../images/profile_pic_copy.jpg';
 import slugPhoto from '../images/slug1.jpg';
-
 ---
 
-<Layout title="Home">
+<Layout title="About">
 	<main>
-
-		<!-- About -->
 		<section>
 
 			<div>
@@ -24,7 +21,6 @@ import slugPhoto from '../images/slug1.jpg';
 					My skill set and education makes me a resourceful individual contributor who blends creativity 
 					with logical problem-solving to make innovative and user-centric digital experiences.
 				</p>
-	
 				<p>
 					I created my first website in 2019 and have stuck with it since. I'm passionate about novel ways
 					of expressing typography on the web and I care deeply behind the accessibility principles of the a11y project.
@@ -34,7 +30,6 @@ import slugPhoto from '../images/slug1.jpg';
 
 		</section>
 
-		<!-- Skills -->
 		<section class="skills">
 
 			<div>
@@ -63,12 +58,11 @@ import slugPhoto from '../images/slug1.jpg';
 
 		</section>
 
-		<!-- Contact -->
 		<section id="contact">
 
 			<div id="contact-slug">
 				<h2>Contact</h2>
-				<Image id="slug-photo" src={slugPhoto} alt="A banana slug eats a mushroom from the stem up.">
+				<Image id="slug-photo" class="center-img" src={slugPhoto} alt="A banana slug eats a mushroom from the stem up.">
 			</div>
 
 			<div id="contact-info">
@@ -138,7 +132,7 @@ import slugPhoto from '../images/slug1.jpg';
 	.center-img {
 		display: block;
 		border-radius: 5px;
-		margin: 1em auto 3em auto;
+		margin: 3em auto;
 	}
 	.center-text {
 		text-align: center;

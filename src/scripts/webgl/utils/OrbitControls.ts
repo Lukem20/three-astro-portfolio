@@ -8,6 +8,7 @@ class OrbitControls {
     this.orbitControls = new OC(gl.camera, gl.renderer.domElement)
     this.orbitControls.enableDamping = true
     this.orbitControls.dampingFactor = 0.1
+    this.orbitControls.enableZoom = false;
   }
 
   get primitive() {
