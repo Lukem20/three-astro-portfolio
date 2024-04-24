@@ -1,32 +1,37 @@
 import * as THREE from 'three';
 import { gl } from './core/WebGL';
+import { mouse3d } from './utils/Mouse3D';
 import { Assets, loadAssets } from './utils/assetLoader';
 import { createTexture } from './utils/createTexture';
-import { controls } from './utils/OrbitControls';
 
 export class TCanvas {
 	private assets: Assets = {
 		images: {
 			paths: [
-				'images/color.jpg',
+				'images/color.jpg', // CAPSTONE
 				'images/abts1.jpg',
-				'images/abts2.jpg',
-				'images/bit.JPG',
-				'images/bit2.JPG',
-				'images/hbc1.JPG',
-				'images/hbc2.JPG',
-				'images/hbcLogo.JPG',
 				'images/hh1.JPG',
-				'images/hh2.JPG',
 				'images/sb1.jpg',
+				'images/sisisBarbershop2.jpg',
+				'images/bit.JPG',
+				'images/color.jpg', // 7DS
+				'images/hbc1.JPG',
+
+				'images/color.jpg', // CAPSTONE
+				'images/abts2.jpg',
+				'images/hh2.JPG',
 				'images/sb2.jpg',
 				'images/sisisBarbershop1.jpg',
-				'images/sisisBarbershop2.jpg',
-				'images/whatDesigner1.JPG',
-				'images/whatDesigner2.JPG',
+				'images/bit2.JPG',
+				'images/color.jpg', // 7DS
+				'images/hbc2.JPG',
 			]
 		},
 	}
+
+	private topWheel = new THREE.Group();
+	private bottomWheel = new THREE.Group();
+	private wheelCarousel = new THREE.Group();
 
 	// Async load images, then initialize the canvas
 	constructor(private container: HTMLElement) {
@@ -41,14 +46,14 @@ export class TCanvas {
 		gl.setup(this.container);
 		gl.scene.background = new THREE.Color('#012');
 		gl.camera.position.z = 2;
+
+		this.topWheel.name = 'topWheel';
+		this.bottomWheel.name = 'bottomWheel';
+		this.wheelCarousel.name = 'wheelCarousel;'
 	}
 
 	// Create the wheel-carousel
 	private createObjects() {
-		let topWheel = new THREE.Group();
-		let bottomWheel = new THREE.Group();
-		let wheelCarousel = new THREE.Group();
-
 		// Geometry
 		const roundedRectangelSize = 1;
 		const geometry = this.RoundedRectangle(roundedRectangelSize, roundedRectangelSize, 0.05, 10);
@@ -61,14 +66,15 @@ export class TCanvas {
 		const numberOfImgages = this.assets.images.paths.length;
 		const wheelRadius = 3;
 		const radianInterval = (2 * Math.PI) / numberOfImgages;
+		
 		for (let i = 0; i < numberOfImgages; i++) {
 
 			// Material
 			material = createTexture(this.assets.images.paths[i]);
-			console.log(material);
 
 			// Mesh
 			topMesh = new THREE.Mesh(geometry, material);
+			topMesh.name = `${this.assets.images.paths[i]} top`;
 			topMesh.position.set(
 				Math.cos(radianInterval * i) * wheelRadius,
 				Math.sin(radianInterval * i) * wheelRadius,
@@ -76,18 +82,19 @@ export class TCanvas {
 			);
 
 			bottomMesh = topMesh.clone();
+			bottomMesh.name = `RoundedRectangle_${i} bottom`;
 			bottomMesh.position.set(
 				Math.cos(radianInterval * i) * wheelRadius,
 				Math.sin(radianInterval * i) * wheelRadius,
 				-1
 			);
 
-			topWheel.add(topMesh);
-			bottomWheel.add(bottomMesh);
+			this.topWheel.add(topMesh);
+			this.bottomWheel.add(bottomMesh);
 		}
 
-		topWheel.translateY(3.85);
-		bottomWheel.translateY(-3.45);
+		this.topWheel.translateY(3.85);
+		this.bottomWheel.translateY(-3.45);
 
 		    // Scroll event listeners
 			let scrollSpeed = 0.0;
@@ -99,25 +106,72 @@ export class TCanvas {
 				scrollSpeed = (event.deltaY / 360) / 2;
 				
 				// Rotate each wheel using the scroll.
-				topWheel.rotateZ(-1.0 * scrollSpeed);
-				bottomWheel.rotateZ(-1.0 * scrollSpeed);
+				this.topWheel.rotateZ(-1.0 * scrollSpeed);
+				this.bottomWheel.rotateZ(-1.0 * scrollSpeed);
 		
 				// Adjust photo rotation after scroll movement
 				for (let i = 0; i < numberOfImgages; i++) {
-					topWheel.children[i].rotateZ(scrollSpeed);
-					bottomWheel.children[i].rotateZ(scrollSpeed);
+					this.topWheel.children[i].rotateZ(scrollSpeed);
+					this.bottomWheel.children[i].rotateZ(scrollSpeed);
 				}
 			});
 
-		wheelCarousel.add(topWheel);
-		wheelCarousel.add(bottomWheel);
+		this.wheelCarousel.add(this.topWheel);
+		this.wheelCarousel.add(this.bottomWheel);
 
-		gl.scene.add(wheelCarousel);
-	}
+		gl.scene.add(this.wheelCarousel);
+	} 
+
+	private mouse = new THREE.Vector2();
+	private raycaster = new THREE.Raycaster();
 
 	private animate = () => {
-		// Remove controls before deployment
-		controls.update();
+		// Update mouse position
+		this.mouse.x = (mouse3d.position.x + 1) / 2;
+		this.mouse.y = (mouse3d.position.y + 1) / 2;
+
+		// Update the raycaster with the current mouse position
+		this.raycaster.setFromCamera(this.mouse, gl.camera);
+
+		// const intersects = this.raycaster.intersectObjects(this.wheelCarousel.children, true);
+		// if (intersects.length > 0) {
+		// 	// Mouse is hovering over an object
+		// 	const intersectedObject = intersects[0].object;
+
+		// 	intersectedObject.material.transparent = true;
+		// 	intersectedObject.material.opacity = 0.1;
+		// } 
+
+		// Check for intersections in the top wheel
+		const intersectsTop = this.raycaster.intersectObjects(this.topWheel.children, true);
+		if (intersectsTop.length > 0) {
+			// Mouse is hovering over an object in the top wheel
+			const intersectedObject = intersectsTop[0].object;
+			intersectedObject.material.transparent = true;
+			intersectedObject.material.opacity = 0.1;
+		} else {
+			// No intersection in the top wheel, reset opacity
+			this.topWheel.children.forEach(child => {
+				child.material.transparent = false;
+				child.material.opacity = 1;
+			});
+		}
+	
+		// Check for intersections in the bottom wheel
+		const intersectsBottom = this.raycaster.intersectObjects(this.bottomWheel.children, true);
+		if (intersectsBottom.length > 0) {
+			// Mouse is hovering over an object in the bottom wheel
+			const intersectedObject = intersectsBottom[0].object;
+			intersectedObject.material.transparent = true;
+			intersectedObject.material.opacity = 0.1;
+		} else {
+			// No intersection in the bottom wheel, reset opacity
+			this.bottomWheel.children.forEach(child => {
+				child.material.transparent = false;
+				child.material.opacity = 1;
+			});
+		}
+
 		gl.render();
 	}
 
